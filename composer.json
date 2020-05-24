@@ -1,0 +1,17 @@
+{
+    "name": "tben/laravel-jsonapi",
+    "description": "",
+    "keywords": ["jsonapi", "laravel"],
+    "license": "MIT",
+    "homepage": "https://github.com/tben/laravel-jsonapi/",
+    "support": {
+        "issues": "https://github.com/tben/laravel-jsonapi/issues",
+        "source": "https://github.com/tben/laravel-jsonapi/"
+    },
+    "authors": [
+        {
+            "name": "Ben Tidy",
+            "email": "jsonapi@bentidy.me"
+        }
+    ]
+}
