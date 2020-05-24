@@ -13,5 +13,11 @@
             "name": "Ben Tidy",
             "email": "jsonapi@bentidy.me"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "Tben\\LaravelJsonAPI\\": "src"
+        }
+    }
+    
 }
