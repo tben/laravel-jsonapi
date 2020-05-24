@@ -2,10 +2,15 @@
 
 namespace Tben\LaravelJsonAPI\Exceptions;
 
+use Throwable;
 use App\Exceptions\Handler;
 
-class JsonApiHandler extends Handler
+class ErrorHandler extends Handler
 {
+    protected $errorResponse = [
+        'Exception' => 'Tben\\LaravelJsonAPI\\Transformer\\Errors\\Exception'
+    ];
+
     /**
      * Report or log an exception.
      *
@@ -32,10 +37,16 @@ class JsonApiHandler extends Handler
      */
     public function render($request, Throwable $e)
     {
-        return response()
-            ->view('hello', $data, 200)
-            ->header('Content-Type', $type);
+        $classType = \get_class($e);
 
-        return parent::render($request, $e);
+        if (array_key_exists($classType, $this->errorResponse)) {
+            $class = $this->errorResponse[$classType];
+
+            return (new $class())->handle($e);
+        }
+
+        return response()->json([
+            "error" => $e->getMessage()
+        ]);
     }
 }
