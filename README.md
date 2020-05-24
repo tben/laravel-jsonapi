@@ -1,8 +1,8 @@
 ## JSONAPI TODO
-- [ ] Middleware setup
-- [ ] Exception handling
-- [ ] JSONAPI response
-- [ ] JSON error response
+- [x] Middleware setup
+- [x] Exception handling
+- [x] JSONAPI response
+- [x] JSON error response
 - [ ] Handle all laravel exception
 - [ ] JSONMeta
 
