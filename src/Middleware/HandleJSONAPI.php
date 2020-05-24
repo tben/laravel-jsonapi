@@ -5,7 +5,7 @@ namespace Tben\LaravelJsonAPI\Middleware;
 use Closure;
 use Tben\LaravelJsonAPI\JSONMeta;
 
-class JSONAPI
+class HandleJSONAPI
 {
     /**
      * Handle an incoming request.
