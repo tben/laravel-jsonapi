@@ -3,6 +3,7 @@
 namespace Tben\LaravelJsonAPI\Middleware;
 
 use Closure;
+use \Illuminate\Http\{Response, JsonResponse};
 use Tben\LaravelJsonAPI\JSONMeta;
 
 class Handle
@@ -10,7 +11,7 @@ class Handle
     protected $defaultClass = "Tben\LaravelJsonAPI\Transformer\Response";
 
     protected $objectResponse = [
-        'EloquentModel' => \Illuminate\Database\Eloquent\Model:class,
+        'EloquentModel' => \Illuminate\Database\Eloquent\Model::class,
         'EloquentCollection' => \Illuminate\Database\Eloquent\Collection::class,
     ];
 
@@ -29,9 +30,8 @@ class Handle
         );
 
         $response = $next($request);
-        $classType = get_class($response->original);
 
-        if ($classType instanceof \Illuminate\Http\Response || $classType instanceof \Illuminate\Http\JsonResponse) {
+        if ($classType instanceof Response || $classType instanceof JsonResponse) {
             return $response;
         }
 
