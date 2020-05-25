@@ -1,6 +1,6 @@
 <?php
 
-namespace Tben\LaravelJsonAPI\Exceptions;
+namespace Tben\LaravelJsonAPI\Exceptions\Errors;
 
 use Throwable;
 
