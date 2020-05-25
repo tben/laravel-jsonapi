@@ -14,7 +14,6 @@ class ErrorHandler extends Handler
         'Illuminate\Auth\Access\AuthorizationException' => 'AuthorizationException',
         'Illuminate\Database\Eloquent\ModelNotFoundException' => 'ModelNotFoundException',
         'Illuminate\Validation\ValidationException' => 'ValidationException',
-
     ];
 
     /**

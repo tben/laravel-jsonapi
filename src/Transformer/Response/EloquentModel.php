@@ -2,9 +2,11 @@
 
 namespace Tben\LaravelJsonAPI\Transformer\Response;
 
+use Illuminate\Http\JsonResponse;
+
 class EloquentModel
 {
-    public function handle($request)
+    public function handle($request) : JsonResponse
     {
         return response()->json(
             [

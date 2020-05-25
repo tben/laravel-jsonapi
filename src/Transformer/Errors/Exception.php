@@ -3,11 +3,11 @@
 namespace Tben\LaravelJsonAPI\Transformer\Errors;
 
 use Throwable;
-use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 
 class Exception
 {
-    public function handle(Throwable $e) : Response
+    public function handle(Throwable $e) : JsonResponse
     {
         return response()->json(
             [
