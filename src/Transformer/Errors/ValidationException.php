@@ -10,7 +10,7 @@ class ValidationException
     public function handle(Throwable $e) : JsonResponse
     {
         $errors = [];
-        foreach ($validationErrors as $index => $message) {
+        foreach ($e->errors() as $index => $message) {
             $errors[] = [
                 "source" => [
                     "pointer" => str_replace('.', '/', $index),
