@@ -31,7 +31,7 @@ class Handle
 
         $response = $next($request);
 
-        if ($classType instanceof Response || $classType instanceof JsonResponse) {
+        if ($response->original instanceof Response || $response->original instanceof JsonResponse) {
             return $response;
         }
 
