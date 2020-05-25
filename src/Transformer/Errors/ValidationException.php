@@ -13,7 +13,7 @@ class ValidationException
         foreach ($e->errors() as $index => $message) {
             $errors[] = [
                 "source" => [
-                    "pointer" => str_replace('.', '/', $index),
+                    "pointer" => '/data/attributes/' . str_replace('.', '/', $index),
                 ],
                 "detail" => $message,
                 "title" => "Invalid Attribute",
