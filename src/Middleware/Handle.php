@@ -10,8 +10,8 @@ class Handle
     protected $defaultClass = "Tben\LaravelJsonAPI\Transformer\Response";
 
     protected $objectResponse = [
-        'Illuminate\Database\Eloquent\Model' => 'EloquentModel',
-        'Illuminate\Database\Eloquent\Collection' => 'EloquentCollection',
+        'EloquentModel' => \Illuminate\Database\Eloquent\Model:class,
+        'EloquentCollection' => \Illuminate\Database\Eloquent\Collection::class,
     ];
 
     /**
@@ -29,15 +29,18 @@ class Handle
         );
 
         $response = $next($request);
-        $classType = get_class($response);
+        $classType = get_class($response->original);
 
-        if ($classType == "Illuminate\Http\Response" || $classType == "Illuminate\Http\JsonResponse") {
+        if ($classType instanceof \Illuminate\Http\Response || $classType instanceof \Illuminate\Http\JsonResponse) {
             return $response;
         }
 
-        if (array_key_exists($classType, $this->objectResponse)) {
-            $class = $this->objectResponse[$classType];
-            return (new $class())->handle($response)->header("Content-Type", "application/vnd.api+json");
+        foreach ($this->objectResponse as $key => $check) {
+            if ($response->original instanceof $check) {
+                $class = $this->defaultClass . '\\' . $key;
+
+                return (new $class())->handle($response)->header("Content-Type", "application/vnd.api+json");
+            }
         }
 
         throw new \Exception("Don't know how to handle this!");
