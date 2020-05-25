@@ -2,18 +2,18 @@
 
 namespace Tben\LaravelJsonAPI\Exceptions;
 
+use Throwable;
+
 class UnknownException
 {
-    public function render()
+    public function render(Throwable $e)
     {
         return response()->json(
             [
                 'errors' => [
                     [
                         "status" => 400,
-                        "source" => [
-                            "pointer" => "data"
-                        ],
+                        "source" => ["pointer" => "data"],
                         "detail" => "Unknown error found",
                         "attribute" => "message",
                         "message" => $exception->getMessage(),
@@ -21,6 +21,6 @@ class UnknownException
                 ],
             ],
             422
-        )->header("Content-Type", "application/vnd.api+json");
+        );
     }
 }

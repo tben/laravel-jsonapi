@@ -7,8 +7,11 @@ use Tben\LaravelJsonAPI\JSONMeta;
 
 class Handle
 {
+    protected $defaultClass = "Tben\LaravelJsonAPI\Transformer\Response";
+
     protected $objectResponse = [
-        'Illuminate\Http\JsonResponse' => 'Tben\\LaravelJsonAPI\\Transformer\\Response\\JsonResponse'
+        'Illuminate\Database\Eloquent\Model' => 'EloquentModel',
+        'Illuminate\Database\Eloquent\Collection' => 'EloquentCollection',
     ];
 
     /**
@@ -26,20 +29,17 @@ class Handle
         );
 
         $response = $next($request);
-        $classType = \get_class($response);
+        $classType = get_class($response);
 
-        if ($classType == "Illuminate\Http\Response") {
+        if ($classType == "Illuminate\Http\Response" || $classType == "Illuminate\Http\JsonResponse") {
             return $response;
         }
 
         if (array_key_exists($classType, $this->objectResponse)) {
             $class = $this->objectResponse[$classType];
-
-            return (new $class())->handle($response);
+            return (new $class())->handle($response)->header("Content-Type", "application/vnd.api+json");
         }
 
-        return response()->json([
-            "error" => "Cannot handle website"
-        ]);
+        throw new \Exception("Don't know how to handle this!");
     }
 }

@@ -7,8 +7,14 @@ use App\Exceptions\Handler;
 
 class ErrorHandler extends Handler
 {
+    protected $defaultClass = "Tben\LaravelJsonAPI\Transformer\Errors";
+
     protected $errorResponse = [
-        'Exception' => 'Tben\\LaravelJsonAPI\\Transformer\\Errors\\Exception'
+        'Exception' => 'Exception',
+        'Illuminate\Auth\Access\AuthorizationException' => 'AuthorizationException',
+        'Illuminate\Database\Eloquent\ModelNotFoundException' => 'ModelNotFoundException',
+        'Illuminate\Validation\ValidationException' => 'ValidationException',
+
     ];
 
     /**
@@ -21,9 +27,7 @@ class ErrorHandler extends Handler
      */
     public function report(Throwable $e)
     {
-        if ($this->shouldReport($e)) {
-            parent::report($e);
-        }
+        parent::report($e);
     }
 
     /**
@@ -37,16 +41,14 @@ class ErrorHandler extends Handler
      */
     public function render($request, Throwable $e)
     {
-        $classType = \get_class($e);
+        $classType = get_class($e);
 
         if (array_key_exists($classType, $this->errorResponse)) {
-            $class = $this->errorResponse[$classType];
-
-            return (new $class())->handle($e);
+            $class = $this->defaultClass . '\\' . $this->errorResponse[$classType];
+        } else {
+            $class = $this->defaultClass . '\\' . 'UnknownException';
         }
 
-        return response()->json([
-            "error" => $e->getMessage()
-        ]);
+        return (new $class())->handle($e)->header("Content-Type", "application/vnd.api+json");
     }
 }
