@@ -1,12 +1,13 @@
 <?php
 
-namespace Tben\LaravelJsonAPI\Exceptions\Errors;
+namespace Tben\LaravelJsonAPI\Transformer\Errors;
 
 use Throwable;
+use Illuminate\Http\Response;
 
 class UnknownException
 {
-    public function render(Throwable $e)
+    public function render(Throwable $e) : Response
     {
         return response()->json(
             [
@@ -16,7 +17,7 @@ class UnknownException
                         "source" => ["pointer" => "data"],
                         "detail" => "Unknown error found",
                         "attribute" => "message",
-                        "message" => $exception->getMessage(),
+                        "message" => $e->getMessage(),
                     ],
                 ],
             ],

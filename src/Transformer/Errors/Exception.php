@@ -17,7 +17,7 @@ class Exception
                         "source" => ["pointer" => "data"],
                         "detail" => "Unknown error found",
                         "attribute" => "message",
-                        "message" => $exception->getMessage(),
+                        "message" => $e->getMessage(),
                     ],
                 ],
             ],
