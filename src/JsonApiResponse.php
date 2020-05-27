@@ -6,7 +6,7 @@ use Illuminate\Http\JsonResponse;
 
 class JsonApiResponse
 {
-    public function successful($data, $status = 200, $headers = [])
+    public function success($data, $status = 200, $headers = [])
     {
         $json = [
             "data" => $data
