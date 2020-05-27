@@ -3,7 +3,6 @@
 namespace Tben\LaravelJsonAPI\Middleware;
 
 use Closure;
-use \Illuminate\Http\{Response, JsonResponse};
 use Tben\LaravelJsonAPI\JSONMeta;
 
 class Handle
@@ -11,8 +10,8 @@ class Handle
     protected $defaultClass = "Tben\LaravelJsonAPI\Transformer\Response";
 
     protected $objectResponse = [
-        'EloquentModel' => \Illuminate\Database\Eloquent\Model::class,
-        'EloquentCollection' => \Illuminate\Database\Eloquent\Collection::class,
+        'Illuminate\Database\Eloquent\Model' => 'EloquentModel',
+        'Illuminate\Database\Eloquent\Collection' => 'EloquentCollection',
     ];
 
     /**
@@ -26,19 +25,25 @@ class Handle
     {
         app()->bind(
             'Illuminate\Contracts\Debug\ExceptionHandler',
-            '\Tben\LaravelJsonAPI\Exceptions\ErrorHandler'
+            'Tben\LaravelJsonAPI\Exceptions\ErrorHandler'
         );
 
         $response = $next($request);
+        $class = get_class($response);
 
-        if ($response->original instanceof Response || $response->original instanceof JsonResponse) {
+        if ($class == 'Illuminate\Http\Response' || $class == 'Illuminate\Http\JsonResponse') {
             return $response;
         }
 
-        foreach ($this->objectResponse as $key => $check) {
-            if ($response->original instanceof $check) {
-                $class = $this->defaultClass . '\\' . $key;
+        if (array_key_exists($class, $this->objectResponse)) {
+            $class = $this->defaultClass . '\\' . $replacement;
 
+            return (new $class())->handle($response)->header("Content-Type", "application/vnd.api+json");
+        }
+
+
+        foreach ($this->objectResponse as $check => $transformerClass) {
+            if (is_subclass_of($class, $check)) {
                 return (new $class())->handle($response)->header("Content-Type", "application/vnd.api+json");
             }
         }
