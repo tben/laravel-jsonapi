@@ -4,7 +4,7 @@ namespace Tben\LaravelJsonAPI;
 
 use Illuminate\Http\JsonResponse;
 
-class JsonApiResponse extends JsonResponse
+class JsonApiResponse
 {
     public function successful($data, $status = 200, $headers = [])
     {
@@ -12,7 +12,7 @@ class JsonApiResponse extends JsonResponse
             "data" => $data
         ];
 
-        return parent::__construct($json, $status, $headers);
+        return new JsonResponse($data, $status, $headers);
     }
 
     public function error($data, $status = 400, $headers = [])
@@ -21,6 +21,6 @@ class JsonApiResponse extends JsonResponse
             "error" => $data
         ];
 
-        return parent::__construct($json, $status, $headers);
+        return new JsonResponse($data, $status, $headers);
     }
 }
