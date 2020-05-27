@@ -12,15 +12,15 @@ class JsonApiResponse
             "data" => $data
         ];
 
-        return new JsonResponse($data, $status, $headers);
+        return new JsonResponse($json, $status, $headers);
     }
 
     public function error($data, $status = 400, $headers = [])
     {
-        $errors = [
+        $json = [
             "error" => $data
         ];
 
-        return new JsonResponse($data, $status, $headers);
+        return new JsonResponse($json, $status, $headers);
     }
 }
