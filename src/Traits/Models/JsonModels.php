@@ -2,6 +2,8 @@
 
 namespace Tben\LaravelJsonAPI\Traits\Models;
 
+use Illuminate\Http\Request;
+
 trait JsonModels
 {
     /**
