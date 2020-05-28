@@ -2,7 +2,7 @@
 
 namespace Tben\LaravelJsonAPI\Providers;
 
-
+use Illuminate\Support\ServiceProvider;
 
 abstract class AbstractServiceProvider extends ServiceProvider
 {

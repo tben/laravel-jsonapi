@@ -29,21 +29,29 @@ class Handle
         );
 
         $response = $next($request);
-        $class = get_class($response);
 
-        if ($class == 'Illuminate\Http\Response' || $class == 'Illuminate\Http\JsonResponse') {
-            return $response;
+        // throw middleware exceptions
+        if ($response->exception !== null) {
+            throw $response->exception;
+        } else {
+            $className = get_class($response->original);
         }
 
-        if (array_key_exists($class, $this->objectResponse)) {
-            $class = $this->defaultClass . '\\' . $replacement;
+        if ($className == 'Illuminate\Http\Response' || $className == 'Illuminate\Http\JsonResponse') {
+            return $response->header("Content-Type", "application/vnd.api+json");
+        }
+
+        if (array_key_exists($className, $this->objectResponse)) {
+            $class = $this->defaultClass . '\\' .  $this->objectResponse[$className];
 
             return (new $class())->handle($response)->header("Content-Type", "application/vnd.api+json");
         }
 
 
         foreach ($this->objectResponse as $check => $transformerClass) {
-            if (is_subclass_of($class, $check)) {
+            $class = $this->defaultClass . '\\' . $transformerClass;
+
+            if (is_subclass_of($transformerClass, $check)) {
                 return (new $class())->handle($response)->header("Content-Type", "application/vnd.api+json");
             }
         }
