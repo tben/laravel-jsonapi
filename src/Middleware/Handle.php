@@ -33,6 +33,8 @@ class Handle
         // throw middleware exceptions
         if ($response->exception !== null) {
             throw $response->exception;
+        } elseif (is_array($response->original)) {
+            return response($response->original)->header("Content-Type", "application/vnd.api+json");
         } else {
             $className = get_class($response->original);
         }
@@ -47,11 +49,10 @@ class Handle
             return (new $class())->handle($response)->header("Content-Type", "application/vnd.api+json");
         }
 
-
         foreach ($this->objectResponse as $check => $transformerClass) {
             $class = $this->defaultClass . '\\' . $transformerClass;
 
-            if (is_subclass_of($transformerClass, $check)) {
+            if (is_subclass_of($className, $check)) {
                 return (new $class())->handle($response)->header("Content-Type", "application/vnd.api+json");
             }
         }
