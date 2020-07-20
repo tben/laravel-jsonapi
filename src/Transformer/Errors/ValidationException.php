@@ -15,7 +15,7 @@ class ValidationException
                 "source" => [
                     "pointer" => '/data/attributes/' . str_replace('.', '/', $index),
                 ],
-                "detail" => $message,
+                "detail" => $message->first(),
                 "title" => "Invalid Attribute",
                 "status" =>  422,
             ];

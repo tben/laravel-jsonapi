@@ -13,7 +13,7 @@ class UnknownException
             [
                 'errors' => [
                     [
-                        "status" => 400,
+                        "status" => 500,
                         "source" => ["pointer" => "data"],
                         "detail" => "Unknown error found",
                         "attribute" => "message",

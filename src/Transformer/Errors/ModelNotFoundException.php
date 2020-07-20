@@ -10,7 +10,18 @@ class ModelNotFoundException
     public function handle(Throwable $e) : JsonResponse
     {
         return response()->json(
-            ["errors" => "Model not found!"],
+            [
+                "errors" => [
+                    [
+                        "status" => 404,
+                        "sources" => [
+                            "pointer" => "",
+                        ],
+                        "title" => "Model not found",
+                        "detail" => "The model cannot be found"
+                    ]
+                ]
+            ],
             404
         );
     }

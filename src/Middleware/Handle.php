@@ -30,33 +30,30 @@ class Handle
 
         $response = $next($request);
 
-        // throw middleware exceptions
         if ($response->exception !== null) {
             throw $response->exception;
-        } elseif (is_array($response->original)) {
-            return response($response->original)->header("Content-Type", "application/vnd.api+json");
-        } else {
-            $className = get_class($response->original);
-        }
-
-        if ($className == 'Illuminate\Http\Response' || $className == 'Illuminate\Http\JsonResponse') {
+        } else if (is_array($response->original)) {
             return $response->header("Content-Type", "application/vnd.api+json");
-        }
+        } else if (is_object($response->original)) {
+            $className = get_class($response->original);
 
-        if (array_key_exists($className, $this->objectResponse)) {
-            $class = $this->defaultClass . '\\' .  $this->objectResponse[$className];
-
-            return (new $class())->handle($response)->header("Content-Type", "application/vnd.api+json");
-        }
-
-        foreach ($this->objectResponse as $check => $transformerClass) {
-            $class = $this->defaultClass . '\\' . $transformerClass;
-
-            if (is_subclass_of($className, $check)) {
+            if (array_key_exists($className, $this->objectResponse)) {
+                $class = $this->defaultClass . '\\' .  $this->objectResponse[$className];
+    
                 return (new $class())->handle($response)->header("Content-Type", "application/vnd.api+json");
             }
+    
+            foreach ($this->objectResponse as $check => $transformerClass) {
+                $class = $this->defaultClass . '\\' . $transformerClass;
+    
+                if (is_subclass_of($className, $check)) {
+                    return (new $class())->handle($response)->header("Content-Type", "application/vnd.api+json");
+                }
+            }
+    
+            throw new \Exception("Don't know how to handle this!");
+        } else {
+            return $response->header("Content-Type", "application/vnd.api+json");
         }
-
-        throw new \Exception("Don't know how to handle this!");
     }
 }
