@@ -3,7 +3,6 @@
 namespace Tben\LaravelJsonAPI\Providers;
 
 use Illuminate\Routing\ResponseFactory;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 use Tben\LaravelJsonAPI\JsonApiResponse;
 use Tben\LaravelJsonAPI\JsonApiResponseError;
@@ -27,7 +26,7 @@ class LaravelServiceProvider extends ServiceProvider
 
     public function register()
     {
-        App::bind('tben.laraveljsonapi.jsonmeta', function () {
+        $this->app->bind('tben.laraveljsonapi.jsonmeta', function () {
             return new JsonMeta();
         });
     }
