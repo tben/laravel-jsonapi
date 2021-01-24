@@ -21,14 +21,7 @@ class EloquentModel
      */
     public static function handle(Model $model): array
     {
-        self::$response['data'] = self::generateFromModel($model, null);
-
-        // Build link
-        if (method_exists($model, 'jsonApiLink')) {
-            self::$response['data']['links'] = [
-                'self' => $model->jsonApiLink(),
-            ];
-        }
+        self::$response['data'] = self::generateFromModel($model);
 
         // Includes
         if (!empty(self::$include) && is_iterable(self::$include)) {
@@ -57,6 +50,11 @@ class EloquentModel
     public static function generateFromModel(Model $model): array
     {
         $data = [];
+
+        // Don't generate data if the model has been deleted
+        if ($model->exist == false) {
+            return $data;
+        }
 
         $data['id'] = $model->getKey();
         $data['type'] = (string) $model->jsonApiType ?? 'Unknown';
