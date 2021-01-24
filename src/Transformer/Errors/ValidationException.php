@@ -2,27 +2,22 @@
 
 namespace Tben\LaravelJsonAPI\Transformer\Errors;
 
-use Throwable;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException as Exception;
+use Tben\LaravelJsonAPI\JsonApiError;
 
 class ValidationException
 {
-    public function handle(Throwable $e) : JsonResponse
+    public static function handle(Exception $e)
     {
         $errors = [];
         foreach ($e->errors() as $index => $message) {
-            $errors[] = [
-                "source" => [
-                    "pointer" => '/data/attributes/' . str_replace('.', '/', $index),
-                ],
-                "detail" => $message->first(),
-                "title" => "Invalid Attribute",
-                "status" =>  422,
-            ];
+            $messages = collect($message);
+
+            $errors[] = new JsonApiError(422, $messages->first());
         }
 
-        return response()->json(
-            ["errors" => $errors],
+        return response()->jsonapierror(
+            $errors,
             422
         );
     }

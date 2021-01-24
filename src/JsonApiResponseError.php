@@ -2,21 +2,11 @@
 
 namespace Tben\LaravelJsonAPI;
 
-use ArrayObject;
-use Illuminate\Database\Eloquent\Collection as EloquentCollectionObject;
-use Illuminate\Database\Eloquent\Model as EloquentModelObject;
-use Illuminate\Pagination\LengthAwarePaginator as EloquentPaginationObject;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection as CollectionObject;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Tben\LaravelJsonAPI\Exceptions\CannotTransform;
-use Tben\LaravelJsonAPI\Transformer\Response\EloquentCollection;
-use Tben\LaravelJsonAPI\Transformer\Response\EloquentModel;
-use Tben\LaravelJsonAPI\Transformer\Response\EloquentPagination;
-use Tben\LaravelJsonAPI\Transformer\Response\Collection;
+use Tben\LaravelJsonAPI\Facades\JsonMeta;
 
-class JsonApiResponse extends JsonResponse
+class JsonApiResponseError extends JsonResponse
 {
     /**
      * Constructor.
@@ -50,6 +40,21 @@ class JsonApiResponse extends JsonResponse
     }
 
     /**
+     * 
+     */
+
+    public function renderErrors(array $errors = [])
+    {
+        $this->data = json_encode([
+            "errors" => array_map(function (JsonApiError $error) {
+                return $error->toArray();
+            }, $errors),
+        ]);
+
+        return $this->update();
+    }
+
+    /**
      * Get the json_decoded data from the response.
      *
      * @param  bool  $assoc
@@ -64,40 +69,19 @@ class JsonApiResponse extends JsonResponse
     /**
      * {@inheritdoc}
      */
-    public function setData($data = [])
+    public function setData($errors = [])
     {
-        $this->original = $data;
+        $this->original = $errors;
 
-        if (is_string($data)) {
-            $data = collect(Arr::wrap($data));
+        if (!is_array($errors)) {
+            throw new InvalidArgumentException("error");
         }
 
-        if (is_array($data)) {
-            $data = collect($data);
-        }
-
-        switch (true) {
-            case $data instanceof EloquentCollectionObject:
-                $response = EloquentCollection::handle($data);
-                break;
-            case $data instanceof EloquentModelObject:
-                $response = EloquentModel::handle($data);
-                break;
-            case $data instanceof EloquentPaginationObject:
-                $response = EloquentPagination::handle($data);
-                break;
-            case $data instanceof ArrayObject:
-                $data = collect();
-                // Fallthrough
-            case $data instanceof CollectionObject:
-                $response = Collection::handle($data);
-                break;
-            default:
-                dd($data);
-                throw new CannotTransform();
-        }
-
-        $this->data = json_encode($response);
+        $this->data = json_encode([
+            "errors" => array_map(function (JsonApiError $error) {
+                return $error->toArray();
+            }, $errors),
+        ]);
 
         if (! $this->hasValidJson(json_last_error())) {
             throw new InvalidArgumentException(json_last_error_msg());
@@ -119,11 +103,11 @@ class JsonApiResponse extends JsonResponse
         }
 
         return $this->hasEncodingOption(JSON_PARTIAL_OUTPUT_ON_ERROR) &&
-            in_array($jsonError, [
-                JSON_ERROR_RECURSION,
-                JSON_ERROR_INF_OR_NAN,
-                JSON_ERROR_UNSUPPORTED_TYPE,
-            ]);
+                    in_array($jsonError, [
+                        JSON_ERROR_RECURSION,
+                        JSON_ERROR_INF_OR_NAN,
+                        JSON_ERROR_UNSUPPORTED_TYPE,
+                    ]);
     }
 
     /**

@@ -3,22 +3,14 @@
 namespace Tben\LaravelJsonAPI\Transformer\Errors;
 
 use Throwable;
-use Illuminate\Http\JsonResponse;
+use Tben\LaravelJsonAPI\JsonApiError;
 
 class NotFoundHttpException
 {
-    public function handle(Throwable $e) : JsonResponse
+    public static function handle(Throwable $e)
     {
-        return response()->json(
-            [
-                "errors" => [
-                    [
-                        "status" => 404,
-                        "detail" => "Page not found!"
-                    ]
-                ]
-            ],
-            404
-        );
+        return response()->jsonapierror([
+            new JsonApiError(404, "Page not found!"),
+        ], 404);
     }
 }

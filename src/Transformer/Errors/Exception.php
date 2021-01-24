@@ -3,25 +3,14 @@
 namespace Tben\LaravelJsonAPI\Transformer\Errors;
 
 use Throwable;
-use Illuminate\Http\JsonResponse;
+use Tben\LaravelJsonAPI\JsonApiError;
 
 class Exception
 {
-    public function handle(Throwable $e) : JsonResponse
+    public static function handle(Throwable $e)
     {
-        return response()->json(
-            [
-                'errors' => [
-                    [
-                        "status" => 500,
-                        "source" => ["pointer" => "data"],
-                        "detail" => "Unknown error found",
-                        "attribute" => "message",
-                        "message" => $e->getMessage(),
-                    ],
-                ],
-            ],
-            422
-        );
+        return response()->jsonapierror([
+            new JsonApiError(500, $e->getMessage()),
+        ], 500);
     }
 }

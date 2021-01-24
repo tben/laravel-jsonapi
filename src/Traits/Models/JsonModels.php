@@ -70,7 +70,7 @@ trait JsonModels
      *
      * @return array
      */
-    public function toJsonApiArray() : array
+    public function toJsonApiArray(): array
     {
         $this->makeHidden(array_keys($this->getRelations()));
 
@@ -100,7 +100,7 @@ trait JsonModels
      *
      * @return array
      */
-    public function getJsonApi() : array
+    public function getJsonApi(): array
     {
         return [
             "type" => $this->type,
@@ -113,7 +113,7 @@ trait JsonModels
      *
      * @return array
      */
-    public function getJsonApiRelationship() : array
+    public function getJsonApiRelationship(): array
     {
         $return = [];
         foreach ($this->getRelations() as $name => $includes) {
@@ -170,8 +170,8 @@ trait JsonModels
      *
      * @return string
      */
-    public function getLink() : string
+    public function getLink(): string
     {
-        return config('app.url') ."{$this->type}/" . $this->getKey();
+        return config('app.url') . "{$this->type}/" . $this->getKey();
     }
 }
