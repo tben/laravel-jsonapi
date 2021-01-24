@@ -8,7 +8,7 @@ class JsonMeta
 
     public function addMetaNotation(string $key, $value)
     {
-        data_fill($this->array, $key, $value);
+        data_set($this->array, $key, $value);
     }
 
     public function addArray(array $array)

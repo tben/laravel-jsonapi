@@ -3,6 +3,7 @@
 namespace Tben\LaravelJsonAPI\Tests;
 
 use Orchestra\Testbench\TestCase as TestCaseBase;
+use Tben\LaravelJsonAPI\Providers\LaravelServiceProvider;
 
 class TestCase extends TestCaseBase
 {
@@ -14,7 +15,9 @@ class TestCase extends TestCaseBase
 
     protected function getPackageProviders($app)
     {
-        
+        return [
+            LaravelServiceProvider::class
+        ];
     }
 
     protected function getEnvironmentSetUp($app)

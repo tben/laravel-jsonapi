@@ -30,6 +30,11 @@
             "Tben\\LaravelJsonAPI\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tben\\LaravelJsonAPI\\Tests\\": "tests"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
