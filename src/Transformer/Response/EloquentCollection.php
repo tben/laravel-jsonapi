@@ -24,14 +24,11 @@ class EloquentCollection
         self::$response['data'] = [];
 
         foreach ($models as $model) {
-            $data = self::generateFromModel($model, null);
-
-            // Build link
-            if (method_exists($model, 'jsonApiLink')) {
-                $data['links'] = [
-                    'self' => $model->jsonApiLink(),
-                ];
+            if ($model->exists == false) {
+                continue;
             }
+
+            $data = self::generateFromModel($model, null);
 
             self::$response['data'][] = $data;
         }

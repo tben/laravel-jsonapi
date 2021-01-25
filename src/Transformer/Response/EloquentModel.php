@@ -52,7 +52,7 @@ class EloquentModel
         $data = [];
 
         // Don't generate data if the model has been deleted
-        if ($model->exist == false) {
+        if ($model->exists == false) {
             return $data;
         }
 

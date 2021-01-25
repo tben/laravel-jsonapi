@@ -2,8 +2,8 @@
 
 namespace Tben\LaravelJsonAPI\Tests\Units;
 
-use Tben\LaravelJsonAPI\Tests\TestCase;
 use Tben\LaravelJsonAPI\Facades\JsonMeta;
+use Tben\LaravelJsonAPI\Tests\TestCase;
 
 class JsonMetaTest extends TestCase
 {
