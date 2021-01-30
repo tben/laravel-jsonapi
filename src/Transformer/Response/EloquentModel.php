@@ -93,7 +93,7 @@ class EloquentModel
                     self::$include[] = $relationshipModel;
                 }
             } elseif ($relationship instanceof EloquentModelObject) {
-                data_fill($data['relationships'], $key . '.data', [
+                data_fill($data, "relationships.{$key}.data", [
                     'id' => $relationship->getKey(),
                     'type' => (string) $relationship->jsonApiType ?? 'Unknown',
                 ]);
