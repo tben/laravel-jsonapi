@@ -33,20 +33,15 @@ class EloquentCollection
             self::$response['data'][] = $data;
         }
 
-        // Includes
-        if (!empty(self::$include) && is_iterable(self::$include)) {
-            $data['included'] = self::generateIncluded();
-        }
-
+        // Add Metadata
         self::$response['meta'] = JsonMeta::viewMetaAll();
-        self::$response['included'] = self::generateIncluded();
-
         if (self::$response['meta'] == null) {
             unset(self::$response['meta']);
         }
 
-        if (self::$response['included'] == null) {
-            unset(self::$response['included']);
+        // Add Includes
+        if (!empty(self::$include) && is_iterable(self::$include)) {
+            self::$response['included'] = self::generateIncluded();
         }
 
         return self::$response;
