@@ -106,7 +106,7 @@ class EloquentModel
     }
 
     /**
-     * Undocumented function
+     * Generate Included
      *
      * @return void
      */

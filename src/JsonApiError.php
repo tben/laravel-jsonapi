@@ -12,7 +12,7 @@ class JsonApiError
     private $source = "";
     private $meta = [];
 
-    public function __construct($code, $title = null, $detail = null, $id = null, array $meta = null)
+    public function __construct($code, $detail = null, $title = null, $id = null, array $meta = null)
     {
         $this->id = $id;
         $this->code = $code;
