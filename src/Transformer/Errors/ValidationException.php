@@ -13,7 +13,7 @@ class ValidationException
         foreach ($e->errors() as $index => $message) {
             $messages = collect($message);
 
-            $errors[] = new JsonApiError(422, $messages->first());
+            $errors[] = new JsonApiError(422, $message[0] ?? 'unknown', null, null, $index);
         }
 
         return response()->jsonapierror(

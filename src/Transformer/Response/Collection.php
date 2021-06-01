@@ -12,7 +12,7 @@ class Collection
         $response = [];
 
         if (count($collection) == 0) {
-            $response["data"] = null;
+            $response["data"] = [];
         } else {
             $response["data"] = $collection->toArray();
         }
