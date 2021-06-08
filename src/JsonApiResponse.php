@@ -2,7 +2,6 @@
 
 namespace Tben\LaravelJsonAPI;
 
-use ArrayObject;
 use Illuminate\Database\Eloquent\Collection as EloquentCollectionObject;
 use Illuminate\Database\Eloquent\Model as EloquentModelObject;
 use Illuminate\Pagination\LengthAwarePaginator as EloquentPaginationObject;
@@ -11,6 +10,7 @@ use Illuminate\Support\Collection as CollectionObject;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Tben\LaravelJsonAPI\Exceptions\CannotTransform;
+use Tben\LaravelJsonAPI\Facades\JsonMeta;
 use Tben\LaravelJsonAPI\Transformer\Response\EloquentCollection;
 use Tben\LaravelJsonAPI\Transformer\Response\EloquentModel;
 use Tben\LaravelJsonAPI\Transformer\Response\EloquentPagination;
@@ -62,11 +62,14 @@ class JsonApiResponse extends JsonResponse
     }
 
     /**
-     * {@inheritdoc}
+     * Transform data depending on the data sent
+     *
+     * @param mixed $data
+     * @return mixed
      */
     public function setData($data = [])
     {
-        $this->original = $data;
+        $this->orginal = $data;
 
         if (is_string($data)) {
             $data = collect(Arr::wrap($data));
@@ -86,15 +89,17 @@ class JsonApiResponse extends JsonResponse
             case $data instanceof EloquentPaginationObject:
                 $response = EloquentPagination::handle($data);
                 break;
-            case $data instanceof ArrayObject:
-                $data = collect();
-                // Fallthrough
             case $data instanceof CollectionObject:
                 $response = Collection::handle($data);
                 break;
             default:
-                dd($data);
                 throw new CannotTransform();
+        }
+
+        // Add Metadata to response
+        $response['meta'] = JsonMeta::viewMetaAll();
+        if ($response['meta'] == null) {
+            unset($response['meta']);
         }
 
         $this->data = json_encode($response);
@@ -103,7 +108,7 @@ class JsonApiResponse extends JsonResponse
             throw new InvalidArgumentException(json_last_error_msg());
         }
 
-        return $this->update();
+        return parent::update();
     }
 
     /**

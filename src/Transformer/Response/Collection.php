@@ -3,7 +3,6 @@
 namespace Tben\LaravelJsonAPI\Transformer\Response;
 
 use Illuminate\Support\Collection as CollectionObject;
-use Tben\LaravelJsonAPI\Facades\JsonMeta;
 
 class Collection
 {
@@ -15,12 +14,6 @@ class Collection
             $response["data"] = [];
         } else {
             $response["data"] = $collection->toArray();
-        }
-
-        $response['meta'] = JsonMeta::viewMetaAll();
-
-        if ($response['meta'] == null) {
-            unset($response['meta']);
         }
 
         return $response;

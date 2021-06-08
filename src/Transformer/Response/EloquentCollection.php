@@ -3,8 +3,6 @@
 namespace Tben\LaravelJsonAPI\Transformer\Response;
 
 use Illuminate\Database\Eloquent\Model;
-use Tben\LaravelJsonAPI\Facades\JsonMeta;
-
 use Illuminate\Database\Eloquent\Collection as EloquentCollectionObject;
 use Illuminate\Database\Eloquent\Model as EloquentModelObject;
 
@@ -31,12 +29,6 @@ class EloquentCollection
             $data = self::generateFromModel($model, null);
 
             self::$response['data'][] = $data;
-        }
-
-        // Add Metadata
-        self::$response['meta'] = JsonMeta::viewMetaAll();
-        if (self::$response['meta'] == null) {
-            unset(self::$response['meta']);
         }
 
         // Add Includes
