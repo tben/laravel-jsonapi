@@ -3,20 +3,14 @@
 namespace Tben\LaravelJsonAPI\Transformer\Errors;
 
 use Throwable;
-use Illuminate\Http\JsonResponse;
+use Tben\LaravelJsonAPI\JsonApiError;
 
 class AuthorizationException
 {
-    public function handle(Throwable $e) : JsonResponse
+    public static function handle(Throwable $e)
     {
-        return response()->json(
-            [
-                "errors" => [
-                    "status" => 401,
-                    "title" => "Unauthorized",
-                ]
-            ],
-            401
-        );
+        return response()->jsonapierror([
+            new JsonApiError(401, "Unauthorized"),
+        ], 401);
     }
 }

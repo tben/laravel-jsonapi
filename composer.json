@@ -14,13 +14,28 @@
             "email": "jsonapi@bentidy.me"
         }
     ],
+    "require": {
+        "php": "^7.2|^8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "orchestra/testbench": "^6.9"
+    },
     "autoload": {
-        "files": [
-            "src/helpers.php"
-        ],
         "psr-4": {
             "Tben\\LaravelJsonAPI\\": "src"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tben\\LaravelJsonAPI\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Tben\\LaravelJsonAPI\\Providers\\LaravelServiceProvider"
+            ]
+        }
     }
-    
 }

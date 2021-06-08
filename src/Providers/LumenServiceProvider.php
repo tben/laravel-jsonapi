@@ -2,13 +2,9 @@
 
 namespace Tben\LaravelJsonAPI\Providers;
 
-class LumenServiceProvider extends AbstractServiceProvider
-{
-    /**
-     * {@inheritdoc}
-     */
-    public function boot()
-    {
+use Illuminate\Support\ServiceProvider;
 
-    }
+class LumenServiceProvider extends ServiceProvider
+{
+
 }

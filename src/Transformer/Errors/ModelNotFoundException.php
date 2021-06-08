@@ -3,26 +3,14 @@
 namespace Tben\LaravelJsonAPI\Transformer\Errors;
 
 use Throwable;
-use Illuminate\Http\JsonResponse;
+use Tben\LaravelJsonAPI\JsonApiError;
 
 class ModelNotFoundException
 {
-    public function handle(Throwable $e) : JsonResponse
+    public static function handle(Throwable $e)
     {
-        return response()->json(
-            [
-                "errors" => [
-                    [
-                        "status" => 404,
-                        "sources" => [
-                            "pointer" => "",
-                        ],
-                        "title" => "Model not found",
-                        "detail" => "The model cannot be found"
-                    ]
-                ]
-            ],
-            404
-        );
+        return response()->jsonapierror([
+            new JsonApiError(404, "Model not found"),
+        ], 404);
     }
 }

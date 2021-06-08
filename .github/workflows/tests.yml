@@ -1,103 +1,42 @@
 name: tests
 
-on:
-  push:
-  pull_request:
-  schedule:
-    - cron: '0 0 * * *'
+on: [push, pull_request]
 
 jobs:
-  linux_tests:
-    runs-on: ubuntu-latest
-    
-    strategy:
-      fail-fast: true
-      matrix:
-        php: [7.3, 7.4, 8.0]
-        stability: [prefer-lowest, prefer-stable]
+    php-tests:
+        runs-on: ${{ matrix.os }}
 
-    name: PHP ${{ matrix.php }} - ${{ matrix.stability }}
+        strategy:
+            matrix:
+                php: [7.4, 7.3, 7.2]
+                laravel: [8.*, 7.*, 6.*]
+                dependency-version: [prefer-lowest, prefer-stable]
+                os: [ubuntu-latest, windows-latest]
+                include:
+                    - laravel: 8.*
+                      testbench: 6.*
+                    - laravel: 7.*
+                      testbench: 5.*
+                    - laravel: 6.*
+                      testbench: 4.*
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+        name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd, redis, memcached
-          tools: composer:v2
-          coverage: none
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v1
 
-      - name: Setup problem matchers
-        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v1
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
+                  coverage: none
 
-      - name: Set Minimum Guzzle Version
-        uses: nick-invision/retry@v1
-        with:
-          timeout_minutes: 5
-          max_attempts: 5
-          command: composer require guzzlehttp/guzzle:^7.2 --no-interaction --no-update
-        if: matrix.php >= 8
+            - name: Install dependencies
+              run: |
+                  composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+                  composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
 
-      - name: Install dependencies
-        uses: nick-invision/retry@v1
-        with:
-          timeout_minutes: 5
-          max_attempts: 5
-          command: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
-
-      - name: Execute tests
-        run: vendor/bin/phpunit --verbose
-        env:
-          DB_PORT: ${{ job.services.mysql.ports[3306] }}
-          DB_USERNAME: root
-
-  windows_tests:
-    runs-on: windows-latest
-
-    strategy:
-      fail-fast: true
-      matrix:
-        php: [7.3, 7.4, 8.0]
-        stability: [prefer-lowest, prefer-stable]
-
-    name: PHP ${{ matrix.php }} - ${{ matrix.stability }} - Windows
-
-    steps:
-      - name: Set git to use LF
-        run: |
-          git config --global core.autocrlf false
-          git config --global core.eol lf
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, gd, pdo_mysql, fileinfo, ftp, redis, memcached
-          tools: composer:v2
-          coverage: none
-
-      - name: Setup problem matchers
-        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
-
-      - name: Set Minimum Guzzle Version
-        uses: nick-invision/retry@v1
-        with:
-          timeout_minutes: 5
-          max_attempts: 5
-          command: composer require guzzlehttp/guzzle:^7.2 --no-interaction --no-update
-        if: matrix.php >= 8
-
-      - name: Install dependencies
-        uses: nick-invision/retry@v1
-        with:
-          timeout_minutes: 5
-          max_attempts: 5
-          command: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
-
-      - name: Execute tests
-        run: vendor/bin/phpunit --verbose
+            - name: Execute tests
+              run: vendor/bin/phpunit
