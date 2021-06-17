@@ -1,6 +1,12 @@
 name: tests
 
-on: [push, pull_request]
+on:
+  # Trigger the workflow on push or pull request
+  push:
+    branches:
+      - master
+      - Development
+      - WIP
 
 jobs:
     php-tests:
