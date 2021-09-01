@@ -2,9 +2,9 @@
 
 namespace Tben\LaravelJsonAPI;
 
-use Throwable;
-use Tben\LaravelJsonAPI\Transformer\Errors\Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Tben\LaravelJsonAPI\Transformer\Errors\Exception;
+use Throwable;
 
 class JsonApiErrorHandling extends ExceptionHandler
 {
@@ -24,7 +24,7 @@ class JsonApiErrorHandling extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $request
      * @param  \Throwable  $exception
      * @return \Symfony\Component\HttpFoundation\Response
      *
@@ -33,7 +33,7 @@ class JsonApiErrorHandling extends ExceptionHandler
     public function render($r, Throwable $e)
     {
         // Check whether exception has toJsonError handling
-        if (method_exists($e, "toJsonError")) {
+        if (method_exists($e, 'toJsonError')) {
             return $e->toJsonError();
         }
 

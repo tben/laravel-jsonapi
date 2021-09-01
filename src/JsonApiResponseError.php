@@ -4,7 +4,6 @@ namespace Tben\LaravelJsonAPI;
 
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Tben\LaravelJsonAPI\Facades\JsonMeta;
 
 class JsonApiResponseError extends JsonResponse
 {
@@ -78,7 +77,7 @@ class JsonApiResponseError extends JsonResponse
         }
 
         $this->data = json_encode([
-            "errors" => array_map(function (JsonApiError $error) {
+            'errors' => array_map(function (JsonApiError $error) {
                 return $error->toArray();
             }, $errors),
         ]);

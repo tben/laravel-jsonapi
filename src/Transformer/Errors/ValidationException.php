@@ -4,6 +4,7 @@ namespace Tben\LaravelJsonAPI\Transformer\Errors;
 
 use Illuminate\Validation\ValidationException as Exception;
 use Tben\LaravelJsonAPI\JsonApiError;
+use Tben\LaravelJsonAPI\JsonApiResponseError;
 
 class ValidationException
 {
@@ -14,9 +15,6 @@ class ValidationException
             $errors[] = new JsonApiError(422, $message[0] ?? 'unknown', null, null, $index);
         }
 
-        return response()->jsonapierror(
-            $errors,
-            422
-        );
+        return new JsonApiResponseError($errors, 422);
     }
 }
