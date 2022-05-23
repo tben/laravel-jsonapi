@@ -1,6 +1,12 @@
 name: tests
 
-on: [push, pull_request]
+on:
+  # Trigger the workflow on push or pull request
+  push:
+    branches:
+      - master
+      - Development
+      - WIP
 
 jobs:
     php-tests:
@@ -8,9 +14,9 @@ jobs:
 
         strategy:
             matrix:
-                php: [8.1, 8.0, 7.4]
-                laravel: [9.*, 8.*]
-                dependency-version: [prefer-lowest, prefer-stable]
+                php: [8.0 7.4, 7.3]
+                laravel: [8.*, 7.*, 6.*]
+                dependency-version: [prefer-stable]
                 os: [ubuntu-latest, windows-latest]
                 include:
                     - laravel: 9.*
@@ -30,6 +36,7 @@ jobs:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
+                  tools: composer:v2
 
             - name: Install dependencies
               run: |
@@ -37,4 +44,4 @@ jobs:
                   composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
 
             - name: Execute tests
-              run: vendor/bin/phpunit
+              run: vendor/bin/phpunit --verbose

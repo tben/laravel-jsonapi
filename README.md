@@ -11,3 +11,6 @@
 - [ ] Sort
 - [ ] Pagination - Page[offset], Page[limit]
 - [ ] Filtering
+
+# Extra
+Exception handler - ModelNotFoundException, this holds the class and model id. This information could be on response

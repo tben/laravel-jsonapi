@@ -4,6 +4,7 @@ namespace Tben\LaravelJsonAPI\Exceptions;
 
 use Exception;
 use Tben\LaravelJsonAPI\JsonApiError;
+use Tben\LaravelJsonAPI\JsonApiResponseError;
 
 class CannotTransform extends Exception
 {
@@ -11,7 +12,7 @@ class CannotTransform extends Exception
 
     public function toJsonError()
     {
-        return response()->jsonapierror([
+        return new JsonApiResponseError([
             new JsonApiError(500, $this->getMessage()),
         ], 500);
     }
