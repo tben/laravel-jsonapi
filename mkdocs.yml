@@ -1,0 +1,8 @@
+site_name: Laravel JSONAPI (Middleware)
+site_description: JsonAPI Support for Laravel Applications using middleware
+site_author: Ben Tidy
+repo_url: https://github.dev/tben/laravel-jsonapi
+theme: readthedocs
+
+pages
+  - Home: index.md
