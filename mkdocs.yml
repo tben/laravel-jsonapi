@@ -4,5 +4,5 @@ site_author: Ben Tidy
 repo_url: https://github.dev/tben/laravel-jsonapi
 theme: readthedocs
 
-pages
+pages:
   - Home: index.md
