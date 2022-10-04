@@ -23,7 +23,7 @@ class JsonSingleError
         private int $status = 500,
         private string $title = 'Error Occurred',
         private ?string $code = '500',
-        private ?string $source = null,
+        private ?array $source = [],
         private ?string $detail = null,
         private ?string $id = null,
         private ?Links $links = null,

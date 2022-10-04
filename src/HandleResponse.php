@@ -39,6 +39,12 @@ class HandleResponse
             unset($response['meta']);
         }
 
+        // Make sure application
+        if (empty($headers['content-type'])) {
+            $headers['content-type'] = 'application/vnd.api+json';
+        }
+
+
         return response()->json($response, $status, $headers, 0);
     }
 }

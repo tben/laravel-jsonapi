@@ -13,13 +13,15 @@ class ValidationException
     public static function handle(ValidException $e)
     {
         $errors = [];
-        foreach ($e->errors() as $index => $message) {
+        foreach ($e->errors() as $pointer => $message) {
             $errors[] = new JsonSingleError(
                 status: Response::HTTP_UNPROCESSABLE_ENTITY,
                 code: Response::HTTP_UNPROCESSABLE_ENTITY,
                 title: 'Validation Error',
                 detail: $message[0] ?? 'unknown',
-                source: (string) $index
+                source: [
+                    'pointer' => self::convertPointToUrl((string) $pointer),
+                ]
             );
         }
 
@@ -27,5 +29,10 @@ class ValidationException
             new JsonApiErrors($errors),
             Response::HTTP_UNPROCESSABLE_ENTITY
         );
+    }
+
+    public static function convertPointToUrl(string $pointer)
+    {
+        return '/' . str_replace('.', '/', $pointer);
     }
 }
