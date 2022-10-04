@@ -2,7 +2,7 @@
 
 namespace Tben\LaravelJsonAPI;
 
-class JsonMeta
+class MetaStore
 {
     private $array = [];
 
@@ -13,7 +13,7 @@ class JsonMeta
      * @param mixed $value
      * @return void
      */
-    public function addMetaNotation(string $key, $value)
+    public function addMetaNotation(string $key, $value): void
     {
         data_set($this->array, $key, $value);
     }
@@ -24,7 +24,7 @@ class JsonMeta
      * @param array $array
      * @return void
      */
-    public function addArray(array $array)
+    public function addArray(array $array): void
     {
         $this->array = array_merge($this->array, $array);
     }
@@ -34,7 +34,7 @@ class JsonMeta
      *
      * @return null|array
      */
-    public function viewMetaAll()
+    public function viewMetaAll(): ?array
     {
         if (empty($this->array)) {
             return null;

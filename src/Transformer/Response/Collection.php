@@ -11,9 +11,9 @@ class Collection
         $response = [];
 
         if (count($collection) == 0) {
-            $response["data"] = [];
+            $response['data'] = [];
         } else {
-            $response["data"] = $collection->toArray();
+            $response['data'] = $collection->toArray();
         }
 
         return $response;

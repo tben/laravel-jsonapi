@@ -18,7 +18,7 @@ class Handle
         if ($request->header('Accept') == 'application/vnd.api+json') {
             app()->bind(
                 'Illuminate\Contracts\Debug\ExceptionHandler',
-                'Tben\LaravelJsonAPI\JsonApiErrorHandling'
+                'Tben\LaravelJsonAPI\HandleErrors'
             );
         }
 

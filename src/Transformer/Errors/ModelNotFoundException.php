@@ -2,15 +2,24 @@
 
 namespace Tben\LaravelJsonAPI\Transformer\Errors;
 
-use Tben\LaravelJsonAPI\JsonApiError;
-use Tben\LaravelJsonAPI\JsonApiResponseError;
+use Tben\LaravelJsonAPI\JsonApiErrors;
+use Tben\LaravelJsonAPI\JsonSingleError;
+use Symfony\Component\HttpFoundation\Response;
+use Tben\LaravelJsonAPI\HandleResponse;
 
 class ModelNotFoundException
 {
     public static function handle()
     {
-        return new JsonApiResponseError([
-            new JsonApiError(404, 'Model not found'),
-        ], 404);
+        return HandleResponse::make(
+            new JsonApiErrors(
+                new JsonSingleError(
+                    status: Response::HTTP_NOT_FOUND,
+                    code: Response::HTTP_NOT_FOUND,
+                    title: trans('jsonapi::errors.title.model_not_found'),
+                ),
+            ),
+            Response::HTTP_NOT_FOUND
+        );
     }
 }

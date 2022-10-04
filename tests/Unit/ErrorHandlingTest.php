@@ -27,7 +27,7 @@ class ErrorHandlingTest extends TestCase
     {
         $container = new Container;
         $errorHandler = new JsonApiErrorHandling($container);
-        $request = Request::capture();
+        $request = new Request;
 
         return $errorHandler->render($request, $exception);
     }
@@ -63,10 +63,11 @@ class ErrorHandlingTest extends TestCase
                 'errors' => [
                     [
                         'id' => null,
-                        'status' => '',
-                        'code' => 401,
-                        'title' => null,
-                        'detail' => 'Unauthorized',
+                        'status' => 401,
+                        'code' => '401',
+                        'links' => null,
+                        'title' => 'unauthorised',
+                        'detail' => 'unauthorised',
                         'source' => null,
                         'meta' => null,
                     ]

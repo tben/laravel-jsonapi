@@ -4,9 +4,8 @@ namespace Tben\LaravelJsonAPI\Providers;
 
 use Illuminate\Routing\ResponseFactory;
 use Illuminate\Support\ServiceProvider;
-use Tben\LaravelJsonAPI\JsonApiResponse;
-use Tben\LaravelJsonAPI\JsonApiResponseError;
-use Tben\LaravelJsonAPI\JsonMeta;
+use Tben\LaravelJsonAPI\HandleResponse;
+use Tben\LaravelJsonAPI\MetaStore;
 
 class LaravelServiceProvider extends ServiceProvider
 {
@@ -15,19 +14,24 @@ class LaravelServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        ResponseFactory::macro('jsonapi', function ($data = [], $status = 200, array $headers = [], $options = 0) {
-            return new JsonApiResponse($data, $status, $headers, $options);
+        ResponseFactory::macro('jsonapi', function ($data = [], $status = 200, array $headers = []) {
+            // TODO: change to response::json();
+            return HandleResponse::make($data, $status, $headers, 0);
         });
 
-        ResponseFactory::macro('jsonapierror', function ($data = [], $status = 200, array $headers = [], $options = 0) {
-            return new JsonApiResponseError($data, $status, $headers, $options);
-        });
+        $this->loadTranslationsFrom($this->app->langPath('vendor/jsonapi'), 'jsonapi');
+ 
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../../lang' => $this->app->langPath('vendor/jsonapi'),
+            ], 'laravel-jsonapi');
+        }
     }
 
     public function register()
     {
         $this->app->bind('tben.laraveljsonapi.jsonmeta', function () {
-            return new JsonMeta();
+            return new MetaStore();
         });
     }
 }

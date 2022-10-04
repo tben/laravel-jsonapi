@@ -1,22 +1,24 @@
 <?php
 
-namespace Tben\LaravelJsonAPI\Transformer\Errors;
+namespace Tben\LaravelJsonAPI\Exceptions;
 
-use Tben\LaravelJsonAPI\JsonApiErrors;
-use Tben\LaravelJsonAPI\JsonSingleError;
+use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Tben\LaravelJsonAPI\HandleResponse;
+use Tben\LaravelJsonAPI\JsonApiErrors;
+use Tben\LaravelJsonAPI\JsonSingleError;
 
-class Exception
+class CannotTransformException extends Exception
 {
-    public static function handle()
+    protected $message = 'Unable to convert object into JSON:API response!';
+
+    public function toJsonError()
     {
         return HandleResponse::make(
             new JsonApiErrors(
                 new JsonSingleError(
                     status: Response::HTTP_INTERNAL_SERVER_ERROR,
                     code: Response::HTTP_INTERNAL_SERVER_ERROR,
-                    title: trans('jsonapi::errors.title.unhandled_exception'),
                 ),
             ),
             Response::HTTP_INTERNAL_SERVER_ERROR

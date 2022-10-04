@@ -6,9 +6,9 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Tben\LaravelJsonAPI\Transformer\Errors\Exception;
 use Throwable;
 
-class JsonApiErrorHandling extends ExceptionHandler
+class HandleErrors extends ExceptionHandler
 {
-    protected $errorResponse = [
+    protected $responses = [
         'Illuminate\Auth\Access\AuthorizationException' =>
             __NAMESPACE__ . '\Transformer\Errors\AuthorizationException',
         'Illuminate\Database\Eloquent\ModelNotFoundException' =>
@@ -22,29 +22,26 @@ class JsonApiErrorHandling extends ExceptionHandler
     ];
 
     /**
-     * Render an exception into an HTTP response.
-     *
-     * @param  mixed  $request
-     * @param  \Throwable  $exception
-     * @return \Symfony\Component\HttpFoundation\Response
-     *
-     * @throws \Throwable
+     * @inheritDoc
      */
-    public function render($r, Throwable $e)
+    public function render($request, Throwable $exception)
     {
-        // Check whether exception has toJsonError handling
-        if (method_exists($e, 'toJsonError')) {
-            return $e->toJsonError();
+        // Function to custom Json:Api error response
+        if (method_exists($exception, 'toJsonError')) {
+            /** @var \Tben\LaravelJsonAPI\JsonException $exception */
+            return $exception->toJsonError();
         }
 
         // TODO:Check whether user defined responses exist
 
         // Check default error responses
-        if (array_key_exists(get_class($e), $this->errorResponse)) {
-            return $this->errorResponse[get_class($e)]::handle($e);
+        $exceptionClass = get_class($exception);
+
+        if (array_key_exists($exceptionClass, $this->responses)) {
+            return call_user_func($this->responses[$exceptionClass] . '::handle', $exception);
         }
 
         // If all else fails then throw them the standard errors
-        return Exception::handle($e);
+        return Exception::handle($exception);
     }
 }
