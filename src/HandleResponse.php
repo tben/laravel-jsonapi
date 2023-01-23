@@ -8,6 +8,8 @@ use Tben\LaravelJsonAPI\Facades\JsonMeta;
 use Tben\LaravelJsonAPI\Transformer\Response\EloquentCollection;
 use Tben\LaravelJsonAPI\Transformer\Response\EloquentModel;
 use Tben\LaravelJsonAPI\Transformer\Response\EloquentPagination;
+use Tben\LaravelJsonAPI\Transformer\Response\EloquentLengthAwarePagination;
+use Tben\LaravelJsonAPI\Transformer\Response\EloquentCursorPagination;
 use Tben\LaravelJsonAPI\Transformer\Response\Collection;
 
 class HandleResponse
