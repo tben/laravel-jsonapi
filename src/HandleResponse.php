@@ -30,6 +30,7 @@ class HandleResponse
             ($data instanceof \Illuminate\Database\Eloquent\Model) => EloquentModel::handle($data),
             ($data instanceof \Illuminate\Pagination\LengthAwarePaginator) => EloquentLengthAwarePagination::handle($data),
             ($data instanceof \Illuminate\Pagination\Paginator) => EloquentPagination::handle($data),
+            ($data instanceof \Illuminate\Pagination\CursorPaginator) => EloquentCursorPagination::handle($data),
             ($data instanceof \Illuminate\Support\Collection) => Collection::handle($data),
             default => throw new CannotTransformException()
         };
