@@ -19,7 +19,7 @@ class LaravelServiceProvider extends ServiceProvider
             return HandleResponse::make($data, $status, $headers, 0);
         });
 
-        $this->loadTranslationsFrom(__DIR__.'/../../lang', 'jsonapi');
+        $this->loadTranslationsFrom(__DIR__ . '/../../lang', 'jsonapi');
  
         if ($this->app->runningInConsole()) {
             $this->publishes([

@@ -2,19 +2,20 @@
 
 namespace Tben\LaravelJsonAPI\Transformer\Response;
 
-use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Tben\LaravelJsonAPI\Facades\JsonMeta;
 
-class EloquentPagination
+class EloquentLengthAwarePagination
 {
-    public static function handle(Paginator $data): array
+    public static function handle(LengthAwarePaginator $data): array
     {
         JsonMeta::addMetaNotation('page', [
             'current' => $data->currentPage(),
+            'last' => $data->lastPage(),
             'size' => $data->perPage(),
-            'next' => $data->hasMorePages(),
+            'total' => $data->total(),
         ]);
-        
+
         return EloquentCollection::handle(collect($data->items()));
     }
 }

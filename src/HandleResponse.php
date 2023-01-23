@@ -23,12 +23,13 @@ class HandleResponse
         }
 
         // Transform various object type
-        $response = match(true) {
+        $response = match (true) {
             ($data === null) => ['data' => null],
             ($data instanceof JsonApiErrors) => $data->toArray(),
             ($data instanceof \Illuminate\Database\Eloquent\Collection) => EloquentCollection::handle($data),
             ($data instanceof \Illuminate\Database\Eloquent\Model) => EloquentModel::handle($data),
-            ($data instanceof \Illuminate\Pagination\LengthAwarePaginator) => EloquentPagination::handle($data),
+            ($data instanceof \Illuminate\Pagination\LengthAwarePaginator) => EloquentLengthAwarePagination::handle($data),
+            ($data instanceof \Illuminate\Pagination\Paginator) => EloquentPagination::handle($data),
             ($data instanceof \Illuminate\Support\Collection) => Collection::handle($data),
             default => throw new CannotTransformException()
         };
