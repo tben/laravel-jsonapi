@@ -70,7 +70,7 @@ class JsonApiBuilder
         
     }
 
-    public function pagination()
+    public function paginate()
     {
         $this->finalize();
 
@@ -90,6 +90,16 @@ class JsonApiBuilder
         }
 
         return $this->query->paginate(perPage: $size, page: $number);
+    }
+
+    public function simplePaginate()
+    {
+        return $this->paginate();
+    }
+
+    public function cursorPaginate() 
+    {
+        return $this->paginate();
     }
 
     public function get()
