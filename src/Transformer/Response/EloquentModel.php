@@ -22,7 +22,7 @@ class EloquentModel
         self::$response['data'] = self::generateFromModel($model);
 
         // Add Includes
-        if (!empty(self::$include) && is_iterable(self::$include)) {
+        if (! empty(self::$include) && is_iterable(self::$include)) {
             self::$response['included'] = self::generateIncluded();
         }
 
@@ -30,41 +30,42 @@ class EloquentModel
     }
 
     /**
-     * Undocumented function
-     *
-     * @return array
+     * Generate a JSON:API-compliant array from an Eloquent model
      */
     public static function generateFromModel(Model $model): array
     {
         $data = [];
 
-        // Don't generate data if the model has been deleted
-        if ($model->exists == false) {
-            return $data;
+        // If the model doesn't exist, return an empty array
+        if (! $model->exists) {
+            return [];
         }
 
+        // Add the model ID to the data
         $data['id'] = $model->getKey();
+
+        // Add the JSON:API type to the data
         $data['type'] = (string) $model->jsonApiType ?? 'Unknown';
 
-        // Attributes
+        // Add the model's attributes to the data
         $attributes = $model->attributesToArray();
         unset($attributes[$model->getKeyName()]);
 
-        if (!empty($attributes)) {
+        if (! empty($attributes)) {
             $data['attributes'] = $attributes;
         }
 
-        // Build link
+        // Add links to the data, if available
         if (method_exists($model, 'jsonApiLink')) {
             $data['links'] = [
                 'self' => $model->jsonApiLink(),
             ];
         }
 
-        // Load Relationships
+        // Add relationships to the data, if available
         if (method_exists($model, 'jsonApiRelationships')) {
             foreach ($model->jsonApiRelationships() as $key => $relationship) {
-                data_fill($data, "relationships.$key", [
+                data_fill($data, "relationships.{$key}", [
                     'links' => [
                         'related' => $relationship,
                     ],
@@ -72,8 +73,10 @@ class EloquentModel
             }
         }
 
-        foreach ($model->getRelations() as $key => $relationship) {
+        // Add related models to the data, if available.
+        foreach ($model->relationsToArray() as $key => $relationship) {
             if ($relationship instanceof EloquentCollectionObject) {
+                // If the relationship is a collection, add each related model's data to the data array.
                 data_fill($data, "relationships.{$key}.data", []);
 
                 foreach ($relationship as $relationshipModel) {
@@ -82,14 +85,17 @@ class EloquentModel
                         'type' => (string) $relationshipModel->jsonApiType ?? 'Unknown',
                     ];
 
+                    // Add the related model to the include array
                     self::$include[] = $relationshipModel;
                 }
             } elseif ($relationship instanceof EloquentModelObject) {
+                // If the relationship is a single model, add its data to the data array
                 data_fill($data, "relationships.{$key}.data", [
                     'id' => $relationship->getKey(),
                     'type' => (string) $relationship->jsonApiType ?? 'Unknown',
                 ]);
 
+                // Add the related model to the include array
                 self::$include[] = $relationship;
             }
         }

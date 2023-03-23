@@ -13,7 +13,7 @@ class JsonApiErrors extends ArrayObject implements ArrayAccess
     /**
      * Undocumented function
      *
-     * @param mixed $errors
+     * @param null|JsonSingleError|JsonSingleError[] $errors
      */
     public function __construct($errors = null)
     {
