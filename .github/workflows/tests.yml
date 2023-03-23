@@ -1,6 +1,11 @@
 name: tests
 
-on: push
+on:
+  # Trigger the workflow on push or pull request
+  push:
+    branches:
+      - master
+      - Development
 
 jobs:
     php-tests:
@@ -8,7 +13,7 @@ jobs:
 
         strategy:
             matrix:
-                php: ['8.0', 8.1]
+                php: [8.1, 8.0, 7.4]
                 laravel: [9.*, 8.*]
                 dependency-version: [prefer-stable]
                 os: [ubuntu-latest, windows-latest]
