@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Tben\LaravelJsonAPI\JsonApiErrorHandling;
+use Tben\LaravelJsonAPI\HandleErrors;
 use Tben\LaravelJsonAPI\Tests\TestCase;
 use Throwable;
 
@@ -26,8 +26,8 @@ class ErrorHandlingTest extends TestCase
     public function setupErrorHandler(Throwable $exception)
     {
         $container = new Container;
-        $errorHandler = new JsonApiErrorHandling($container);
-        $request = Request::capture();
+        $errorHandler = new HandleErrors($container);
+        $request = new Request;
 
         return $errorHandler->render($request, $exception);
     }
@@ -63,11 +63,12 @@ class ErrorHandlingTest extends TestCase
                 'errors' => [
                     [
                         'id' => null,
-                        'status' => '',
-                        'code' => 401,
-                        'title' => null,
-                        'detail' => 'Unauthorized',
-                        'source' => null,
+                        'status' => 401,
+                        'code' => '401',
+                        'links' => null,
+                        'title' => trans('jsonapi::errors.title.unauthorised'),
+                        'detail' => trans('jsonapi::errors.description.unauthorised'),
+                        'source' => [],
                         'meta' => null,
                     ]
                 ]
@@ -93,11 +94,12 @@ class ErrorHandlingTest extends TestCase
                 'errors' => [
                     [
                         'id' => null,
-                        'status' => '',
-                        'code' => 500,
-                        'title' => null,
-                        'detail' => 'Test',
-                        'source' => null,
+                        'status' => 500,
+                        'code' => '500',
+                        'links' => null,
+                        'title' => trans('jsonapi::errors.title.unhandled_exception'),
+                        'detail' => null,
+                        'source' => [],
                         'meta' => null,
                     ],
                 ]
@@ -114,7 +116,7 @@ class ErrorHandlingTest extends TestCase
     public function testModelNotFoundException()
     {
         $response = $this->setupErrorHandler(
-            (new ModelNotFoundException())->setModel('\Model\test', 1)
+            (new ModelNotFoundException)->setModel('\Model\test', 1)
         );
 
         $this->assertApiJsonResponse(
@@ -123,11 +125,12 @@ class ErrorHandlingTest extends TestCase
                 'errors' => [
                     [
                         'id' => null,
-                        'status' => '',
-                        'code' => 404,
-                        'title' => null,
-                        'detail' => 'Model not found',
-                        'source' => null,
+                        'status' => 404,
+                        'code' => '404',
+                        'links' => null,
+                        'title' => trans('jsonapi::errors.title.model_not_found'),
+                        'detail' => null,
+                        'source' => [],
                         'meta' => null,
                     ]
                 ]
@@ -143,7 +146,7 @@ class ErrorHandlingTest extends TestCase
      */
     public function testNotFoundHttpException()
     {
-        $response = $this->setupErrorHandler(new NotFoundHttpException());
+        $response = $this->setupErrorHandler(new NotFoundHttpException);
 
         $this->assertApiJsonResponse(
             $response,
@@ -151,11 +154,12 @@ class ErrorHandlingTest extends TestCase
                 'errors' => [
                     [
                         'id' => null,
-                        'status' => '',
-                        'code' => 404,
-                        'title' => null,
-                        'detail' => 'Page not found!',
-                        'source' => null,
+                        'status' => 404,
+                        'code' => '404',
+                        'links' => null,
+                        'title' => trans('jsonapi::errors.title.page_not_found'),
+                        'detail' => null,
+                        'source' => [],
                         'meta' => null,
                     ]
                 ]
@@ -184,20 +188,26 @@ class ErrorHandlingTest extends TestCase
                 'errors' => [
                     [
                         'id' => null,
-                        'status' => '',
-                        'code' => 422,
-                        'title' => null,
+                        'status' => 422,
+                        'code' => '422',
+                        'links' => null,
+                        'title' => 'Validation Error',
                         'detail' => '1-1',
-                        'source' => 'field_name_1',
+                        'source' => [
+                            'pointer' => '/field_name_1'
+                        ],
                         'meta' => null,
                     ],
                     [
                         'id' => null,
-                        'status' => '',
-                        'code' => 422,
-                        'title' => null,
+                        'status' => 422,
+                        'code' => '422',
+                        'links' => null,
+                        'title' => 'Validation Error',
                         'detail' => '1-2',
-                        'source' => 'field_name_2',
+                        'source' => [
+                            'pointer' => '/field_name_2'
+                        ],
                         'meta' => null,
                     ]
                 ]

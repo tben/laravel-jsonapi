@@ -2,19 +2,37 @@
 
 namespace Tben\LaravelJsonAPI\Transformer\Errors;
 
-use Illuminate\Validation\ValidationException as Exception;
-use Tben\LaravelJsonAPI\JsonApiError;
-use Tben\LaravelJsonAPI\JsonApiResponseError;
+use Illuminate\Validation\ValidationException as ValidException;
+use Symfony\Component\HttpFoundation\Response;
+use Tben\LaravelJsonAPI\HandleResponse;
+use Tben\LaravelJsonAPI\JsonApiErrors;
+use Tben\LaravelJsonAPI\JsonSingleError;
 
 class ValidationException
 {
-    public static function handle(Exception $e)
+    public static function handle(ValidException $e)
     {
         $errors = [];
-        foreach ($e->errors() as $index => $message) {
-            $errors[] = new JsonApiError(422, $message[0] ?? 'unknown', null, null, $index);
+        foreach ($e->errors() as $pointer => $message) {
+            $errors[] = new JsonSingleError(
+                status: Response::HTTP_UNPROCESSABLE_ENTITY,
+                code: Response::HTTP_UNPROCESSABLE_ENTITY,
+                title: 'Validation Error',
+                detail: $message[0] ?? 'unknown',
+                source: [
+                    'pointer' => self::convertPointToUrl((string) $pointer),
+                ]
+            );
         }
 
-        return new JsonApiResponseError($errors, 422);
+        return HandleResponse::make(
+            new JsonApiErrors($errors),
+            Response::HTTP_UNPROCESSABLE_ENTITY
+        );
+    }
+
+    public static function convertPointToUrl(string $pointer)
+    {
+        return '/' . str_replace('.', '/', $pointer);
     }
 }
