@@ -83,8 +83,19 @@ class EloquentCollection
             }
         }
 
+        // Hide relations
+        $relations = $model->getRelations();
+
+        if (count($model->getVisible()) > 0) {
+            $relations = array_intersect_key($relations, array_flip($model->getVisible()));
+        }
+
+        if (count($model->getHidden()) > 0) {
+            $relations = array_diff_key($relations, array_flip($model->getHidden()));
+        }
+
         // Add related models to the data, if available.
-        foreach ($model->relationsToArray() as $key => $relationship) {
+        foreach ($relations as $key => $relationship) {
             if ($relationship instanceof EloquentCollectionObject) {
                 // If the relationship is a collection, add each related model's data to the data array.
                 data_fill($data, "relationships.{$key}.data", []);
