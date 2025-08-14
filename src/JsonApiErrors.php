@@ -89,12 +89,12 @@ class JsonApiErrors extends ArrayObject implements ArrayAccess
      */
     public function each(callable $cb): self
     {
-		foreach ($this as $key => $value) {
+        foreach ($this as $key => $value) {
             $cb($value, $key, $this);
         }
     
-		return $this;
-	}
+        return $this;
+    }
 
     /**
      * Undocumented function
@@ -105,8 +105,7 @@ class JsonApiErrors extends ArrayObject implements ArrayAccess
     public function map(callable $cb): array
     {
         return array_map(fn($item) => $cb($item), $this->errors);
-	}
-
+    }
 
     /**
      * Undocumented function

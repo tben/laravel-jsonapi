@@ -8,22 +8,22 @@ use Tben\LaravelJsonAPI\JsonApi;
 use Tben\LaravelJsonAPI\JsonApiErrors;
 use Tben\LaravelJsonAPI\JsonSingleError;
 
-class CannotTransformException extends Exception
+class NoHeaderException extends Exception
 {
-    protected $message = 'Unable to convert object into JSON:API response!';
+    protected $message = 'The Accept header must be set to "application/vnd.api+json"';
 
     public function render()
     {
         return JsonApi::response(
             new JsonApiErrors(
                 new JsonSingleError(
-                    status: Response::HTTP_INTERNAL_SERVER_ERROR,
-                    code: 'INTERNAL_SERVER_ERROR',
+                    status: Response::HTTP_BAD_REQUEST,
+                    code: 'BAD_REQUEST',
                     title: $this->message,
                     detail: $this->getMessage(),
                 ),
             )
         )
-        ->setStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
+        ->setStatus(Response::HTTP_BAD_REQUEST);
     }
 }

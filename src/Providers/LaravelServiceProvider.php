@@ -4,8 +4,7 @@ namespace Tben\LaravelJsonAPI\Providers;
 
 use Illuminate\Routing\ResponseFactory;
 use Illuminate\Support\ServiceProvider;
-use Tben\LaravelJsonAPI\HandleResponse;
-use Tben\LaravelJsonAPI\MetaStore;
+use Tben\LaravelJsonAPI\JsonApi;
 
 class LaravelServiceProvider extends ServiceProvider
 {
@@ -14,24 +13,17 @@ class LaravelServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        ResponseFactory::macro('jsonapi', function ($data = [], $status = 200, array $headers = []) {
-            // TODO: change to response::json();
-            return HandleResponse::make($data, $status, $headers, 0);
-        });
+        ResponseFactory::macro(
+            'jsonapi',
+            fn (mixed $data = [], $status = 200, array $headers = []) => JsonApi::response($data)
+                ->setStatus($status)
+                ->withHeaders($headers)
+        );
 
         $this->loadTranslationsFrom(__DIR__ . '/../../lang', 'jsonapi');
  
-        if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__.'/../../lang' => $this->app->langPath('vendor/jsonapi'),
-            ], 'laravel-jsonapi');
-        }
-    }
-
-    public function register()
-    {
-        $this->app->bind('tben.laraveljsonapi.jsonmeta', function () {
-            return new MetaStore();
-        });
+        $this->publishes([
+            __DIR__.'/../../lang' => $this->app->langPath('vendor/jsonapi'),
+        ]);
     }
 }

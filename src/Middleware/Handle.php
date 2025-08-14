@@ -3,23 +3,21 @@
 namespace Tben\LaravelJsonAPI\Middleware;
 
 use Closure;
+use Illuminate\Http\Request;
+use Tben\LaravelJsonAPI\HandleErrors;
 
 class Handle
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
-        if ($request->header('Accept') == 'application/vnd.api+json') {
-            app()->bind(
-                'Illuminate\Contracts\Debug\ExceptionHandler',
-                'Tben\LaravelJsonAPI\HandleErrors'
-            );
+        $acceptable = $request->getAcceptableContentTypes();
+
+        if (isset($acceptable[0]) && 'application/vnd.api+json' === $acceptable[0]) {
+            $handler = app()->make(\Illuminate\Contracts\Debug\ExceptionHandler::class);
+            if (! method_exists($handler, 'renderable')) {
+                return $next($request);
+            }
+            $handler->renderable(new HandleErrors);
         }
 
         return $next($request);

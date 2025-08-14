@@ -2,25 +2,24 @@
 
 namespace Tben\LaravelJsonAPI\Transformer\Errors;
 
-use Symfony\Component\HttpFoundation\Response;
-use Tben\LaravelJsonAPI\HandleResponse;
+use Illuminate\Auth\Access\AuthorizationException as AccessAuthorizationException;
+use Tben\LaravelJsonAPI\JsonApi;
 use Tben\LaravelJsonAPI\JsonApiErrors;
 use Tben\LaravelJsonAPI\JsonSingleError;
 
 class AuthorizationException
 {
-    public static function handle()
+    public static function handle(AccessAuthorizationException $ex)
     {
-        return HandleResponse::make(
+        return JsonApi::response(
             new JsonApiErrors(
                 new JsonSingleError(
-                    status: Response::HTTP_UNAUTHORIZED,
-                    code: Response::HTTP_UNAUTHORIZED,
-                    title: trans('jsonapi::errors.title.unauthorised'),
-                    detail: trans('jsonapi::errors.description.unauthorised'),
+                    status: $ex->status(),
+                    code: 'FORBIDDEN',
+                    title: trans('jsonapi::errors.title.forbidden'),
+                    detail: trans('jsonapi::errors.description.forbidden'),
                 ),
-            ),
-            Response::HTTP_UNAUTHORIZED
-        );
+            )
+        )->setStatus($ex->status());
     }
 }

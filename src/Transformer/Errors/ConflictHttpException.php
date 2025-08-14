@@ -7,19 +7,19 @@ use Tben\LaravelJsonAPI\JsonApi;
 use Tben\LaravelJsonAPI\JsonApiErrors;
 use Tben\LaravelJsonAPI\JsonSingleError;
 
-class Exception
+class ConflictHttpException
 {
     public static function handle()
     {
         return JsonApi::response(
             new JsonApiErrors(
                 new JsonSingleError(
-                    status: Response::HTTP_INTERNAL_SERVER_ERROR,
-                    code: 'INTERNAL_SERVER_ERROR',
-                    title: trans('jsonapi::errors.title.unhandled_exception'),
-                    detail: trans('jsonapi::errors.description.unhandled_exception'),
+                    status: Response::HTTP_CONFLICT,
+                    code: 'CONFLICT',
+                    title: trans('jsonapi::errors.title.conflict'),
+                    detail: trans('jsonapi::errors.description.conflict'),
                 ),
             )
-        )->setStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
+        )->setStatus(Response::HTTP_CONFLICT);
     }
 }

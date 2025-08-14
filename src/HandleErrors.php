@@ -2,46 +2,45 @@
 
 namespace Tben\LaravelJsonAPI;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Tben\LaravelJsonAPI\Transformer\Errors\Exception;
+use Illuminate\Http\Request;
+use Tben\LaravelJsonAPI\Transformer\Errors;
+use Symfony\Component\HttpKernel\Exception;
 use Throwable;
 
-class HandleErrors extends ExceptionHandler
+class HandleErrors
 {
     protected $responses = [
-        'Illuminate\Auth\Access\AuthorizationException' =>
-            __NAMESPACE__ . '\Transformer\Errors\AuthorizationException',
-        'Illuminate\Database\Eloquent\ModelNotFoundException' =>
-            __NAMESPACE__ . '\Transformer\Errors\ModelNotFoundException',
-        'Illuminate\Validation\ValidationException' =>
-            __NAMESPACE__ . '\Transformer\Errors\ValidationException',
-        'Symfony\Component\HttpKernel\Exception\NotFoundHttpException' =>
-            __NAMESPACE__ . '\Transformer\Errors\NotFoundHttpException',
-        'Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException' =>
-            __NAMESPACE__ . '\Transformer\Errors\UnauthorizedHttpException',
+        \Illuminate\Auth\Access\AuthorizationException::class => Errors\AuthorizationException::class,
+        \Illuminate\Auth\AuthenticationException::class => Errors\AuthenticationException::class,
+        \Illuminate\Contracts\Filesystem\FileNotFoundException::class => Errors\FileNotFoundException::class,
+        \Illuminate\Database\Eloquent\ModelNotFoundException::class => Errors\ModelNotFoundException::class,
+        \Illuminate\Database\RecordsNotFoundException::class => Errors\NotFoundHttpException::class,
+        \Illuminate\Session\TokenMismatchException::class => Errors\TokenMismatchException::class,
+        \Illuminate\Validation\ValidationException::class => Errors\ValidationException::class,
+        Exception\ConflictHttpException::class => Errors\ConflictHttpException::class,
+        Exception\GoneHttpException::class => Errors\GoneHttpException::class,
+        Exception\MethodNotAllowedHttpException::class => Errors\MethodNotAllowedHttpException::class,
+        Exception\NotFoundHttpException::class => Errors\NotFoundHttpException::class,
+        Exception\ServiceUnavailableHttpException::class => Errors\ServiceUnavailableHttpException::class,
+        Exception\TooManyRequestsHttpException::class => Errors\TooManyRequestsHttpException::class,
+        Exception\UnauthorizedHttpException::class => Errors\AuthenticationException::class,
+        \Symfony\Component\Routing\Exception\RouteNotFoundException::class => Errors\NotFoundHttpException::class,
+        Throwable::class => Errors\Exception::class,
     ];
 
-    /**
-     * @inheritDoc
-     */
-    public function render($request, Throwable $exception)
+    public function __invoke(Throwable $ex, Request $request)
     {
-        // Function to custom Json:Api error response
-        if (method_exists($exception, 'toJsonError')) {
-            /** @var \Tben\LaravelJsonAPI\JsonException $exception */
-            return $exception->toJsonError();
+        if (method_exists($ex, 'render')) {
+            return $ex->render($request);
         }
 
-        // TODO:Check whether user defined responses exist
+        $responses = array_merge($this->responses, config('jsonapi.error_responses', []));
 
         // Check default error responses
-        $exceptionClass = get_class($exception);
-
-        if (array_key_exists($exceptionClass, $this->responses)) {
-            return call_user_func($this->responses[$exceptionClass] . '::handle', $exception);
+        foreach ($responses as $to => $from) {
+            if (class_exists($from) && is_a($ex, $to)) {
+                return call_user_func([$from, 'handle'], $ex);
+            }
         }
-
-        // If all else fails then throw them the standard errors
-        return Exception::handle($exception);
     }
 }

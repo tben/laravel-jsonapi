@@ -7,7 +7,7 @@ use Tben\LaravelJsonAPI\JsonApi;
 use Tben\LaravelJsonAPI\JsonApiErrors;
 use Tben\LaravelJsonAPI\JsonSingleError;
 
-class Exception
+class QueryException
 {
     public static function handle()
     {
@@ -15,9 +15,9 @@ class Exception
             new JsonApiErrors(
                 new JsonSingleError(
                     status: Response::HTTP_INTERNAL_SERVER_ERROR,
-                    code: 'INTERNAL_SERVER_ERROR',
-                    title: trans('jsonapi::errors.title.unhandled_exception'),
-                    detail: trans('jsonapi::errors.description.unhandled_exception'),
+                    code: 'DATABASE_ERROR',
+                    title: trans('jsonapi::errors.title.database_error'),
+                    detail: trans('jsonapi::errors.description.database_error'),
                 ),
             )
         )->setStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
