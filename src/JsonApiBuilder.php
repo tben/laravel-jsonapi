@@ -14,6 +14,7 @@ class JsonApiBuilder
     private Builder $query;
     private $request;
     private array $allowedSort = [];
+    private array $allowedIncludes = [];
 
     public function __construct(
         Model $model,
@@ -64,7 +65,60 @@ class JsonApiBuilder
                 }
 
                 if (is_array($value)) {
-                    $this->query->whereIn($column, $value);
+                    $actioned = false;
+                    if (isset($value['$gte'])) {
+                        if (is_numeric($value['$gte'])) {
+                            $this->query->where($column, '>=', $value['$gte']);
+                        } else {
+                            throw new \InvalidArgumentException("Invalid filter value for '$column'");
+                        }
+
+                        unset($value['$gte']);
+                    }
+                    if (isset($value['$gt'])) {
+                        if (is_numeric($value['$gt'])) {
+                            $this->query->where($column, '>', $value['$gt']);
+                        } else {
+                            throw new \InvalidArgumentException("Invalid filter value for '$column'");
+                        }
+                        unset($value['$gt']);
+                    }
+                    if (isset($value['$lt'])) {
+                        if (is_numeric($value['$lt'])) {
+                            $this->query->where($column, '<', $value['$lt']);
+                        } else {
+                            throw new \InvalidArgumentException("Invalid filter value for '$column'");
+                        }
+                        unset($value['$lt']);
+                    }
+                    if (isset($value['$lte'])) {
+                        if (is_numeric($value['$lte'])) {
+                            $this->query->where($column, '<=', $value['$lte']);
+                        } else {
+                            throw new \InvalidArgumentException("Invalid filter value for '$column'");
+                        }
+                        unset($value['$lte']);
+                    }
+                    if (isset($value['$in'])) {
+                        if (is_array($value['$in'])) {
+                            $this->query->whereIn($column, $value['$in']);
+                        } else {
+                            throw new \InvalidArgumentException("Invalid filter value for '$column'");
+                        }
+                        unset($value['$in']);
+                    }
+                    if (isset($value['$nin'])) {
+                        if (is_array($value['$nin'])) {
+                            $this->query->whereNotIn($column, $value['$nin']);
+                        } else {
+                            throw new \InvalidArgumentException("Invalid filter value for '$column'");
+                        }
+                        unset($value['$nin']);
+                    }
+
+                    if (! empty($value)) {
+                        $this->query->whereIn($column, $value); 
+                    }
                 }
             }
         }
@@ -78,6 +132,8 @@ class JsonApiBuilder
 
     public function relationship(JsonApiRelationship $relationship): self
     {
+        $this->allowedIncludes[$relationship->getRelationshipName()] = $relationship;
+
         return $this;
     }
 
@@ -105,6 +161,21 @@ class JsonApiBuilder
                 if (in_array($sort, $this->allowedSort)) {
                     $this->query->orderBy($sort, $direction);
                 }
+            }
+        }
+
+        if ($this->request->filled('include')) {
+            $includes = explode(',', $this->request->input('include'));
+
+            $validIncludes = [];
+            foreach ($includes as $include) {
+                if (array_key_exists($include, $this->allowedIncludes)) {
+                    $validIncludes[] = $include;
+                }
+            }
+
+            if (! empty($validIncludes)) {
+                $this->query->with($validIncludes);
             }
         }
     }
