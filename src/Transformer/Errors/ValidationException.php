@@ -17,8 +17,8 @@ class ValidationException
             $errors[] = new JsonSingleError(
                 status: Response::HTTP_UNPROCESSABLE_ENTITY,
                 code: 'UNPROCESSABLE_ENTITY',
-                title: trans('jsonapi.errors.title.unprocessable_entity'),
-                detail: $message[0] ?? trans('jsonapi.errors.description.unprocessable_entity'),
+                title: trans('jsonapi::errors.title.unprocessable_entity'),
+                detail: $message[0] ?? trans('jsonapi::errors.description.unprocessable_entity'),
                 source: [
                     'pointer' => self::convertPointToUrl((string) $pointer),
                 ]

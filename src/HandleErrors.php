@@ -9,7 +9,7 @@ use Throwable;
 
 class HandleErrors
 {
-    protected $responses = [
+    protected array $responses = [
         \Illuminate\Auth\Access\AuthorizationException::class => Errors\AuthorizationException::class,
         \Illuminate\Auth\AuthenticationException::class => Errors\AuthenticationException::class,
         \Illuminate\Contracts\Filesystem\FileNotFoundException::class => Errors\FileNotFoundException::class,
@@ -34,12 +34,16 @@ class HandleErrors
             return $ex->render($request);
         }
 
-        $responses = array_merge($this->responses, config('jsonapi.error_responses', []));
+        // Merge config overrides *first* so users can successfully override defaults
+        $errorHandlers = array_merge(
+            config('jsonapi.error_responses', []),
+            $this->responses
+        );
 
-        // Check default error responses
-        foreach ($responses as $to => $from) {
-            if (class_exists($from) && is_a($ex, $to)) {
-                return call_user_func([$from, 'handle'], $ex);
+        // Check error responses mapping
+        foreach ($errorHandlers as $exceptionClass => $handlerClass) {
+            if (class_exists($handlerClass) && is_a($ex, $exceptionClass)) {
+                return call_user_func([$handlerClass, 'handle'], $ex);
             }
         }
     }

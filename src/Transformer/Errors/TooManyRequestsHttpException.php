@@ -16,8 +16,8 @@ class TooManyRequestsHttpException
                 new JsonSingleError(
                     status: Response::HTTP_TOO_MANY_REQUESTS,
                     code: 'TOO_MANY_REQUESTS',
-                    title: trans('jsonapi.errors.title.too_many_requests'),
-                    detail: trans('jsonapi.errors.description.too_many_requests'),
+                    title: trans('jsonapi::errors.title.too_many_requests'),
+                    detail: trans('jsonapi::errors.description.too_many_requests'),
                 ),
             )
         )->setStatus(Response::HTTP_TOO_MANY_REQUESTS);

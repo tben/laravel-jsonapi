@@ -16,8 +16,8 @@ class ServiceUnavailableHttpException
                 new JsonSingleError(
                     status: Response::HTTP_SERVICE_UNAVAILABLE,
                     code: 'SERVICE_UNAVAILABLE',
-                    title: trans('jsonapi.errors.title.service_unavailable'),
-                    detail: trans('jsonapi.errors.description.service_unavailable'),
+                    title: trans('jsonapi::errors.title.service_unavailable'),
+                    detail: trans('jsonapi::errors.description.service_unavailable'),
                 ),
             )
         )->setStatus(Response::HTTP_SERVICE_UNAVAILABLE);

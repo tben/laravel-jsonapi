@@ -14,19 +14,21 @@ use Tben\LaravelJsonAPI\Transformer\Response\Collection;
 
 class HandleResponse
 {
-    public static function make(mixed $data = [], $status = 200, $headers = [])
+    public static function make(mixed $data = [], int $status = 200, array $headers = [])
     {
         if (is_string($data)) {
             $data = collect(Arr::wrap($data));
         }
 
+        // If it's a raw array, check if it's already structured or convert to collection
         if (is_array($data)) {
-            $data = collect($data);
+            $data = isset($data['data']) ? $data : collect($data);
         }
 
-        // Transform various object type
+        // Transform various object types
         $response = match (true) {
             ($data === null) => ['data' => null],
+            is_array($data) => $data, // Already structured array (e.g. custom error or pre-formatted payload)
             ($data instanceof JsonApiErrors) => $data->toArray(),
             ($data instanceof \Illuminate\Database\Eloquent\Collection) => EloquentCollection::handle($data),
             ($data instanceof \Illuminate\Database\Eloquent\Model) => EloquentModel::handle($data),
@@ -37,18 +39,20 @@ class HandleResponse
             default => throw new CannotTransformException()
         };
 
-        // Add Metadata to response
-        $response['meta'] = JsonMeta::viewMetaAll();
-        if ($response['meta'] == null) {
-            unset($response['meta']);
+        // Add Metadata to response if present
+        $meta = JsonMeta::viewMetaAll();
+        if (!empty($meta)) {
+            $response['meta'] = $meta;
         }
 
-        // Make sure application
+        // Ensure proper JSON:API content-type header
         if (empty($headers['content-type'])) {
             $headers['content-type'] = 'application/vnd.api+json';
         }
 
+        // Use clean JSON flags instead of 0
+        $jsonFlags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
 
-        return response()->json($response, $status, $headers, 0);
+        return response()->json($response, $status, $headers, $jsonFlags);
     }
 }

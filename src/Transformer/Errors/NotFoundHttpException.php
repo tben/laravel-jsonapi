@@ -15,7 +15,7 @@ class NotFoundHttpException
             new JsonApiErrors(
                 new JsonSingleError(
                     status: Response::HTTP_NOT_FOUND,
-                    code: 'MODEL_NOT_FOUND',
+                    code: 'NOT_FOUND',
                     title: trans('jsonapi::errors.title.not_found'),
                     detail: trans('jsonapi::errors.description.not_found'),
                 ),
