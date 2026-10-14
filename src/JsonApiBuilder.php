@@ -258,19 +258,21 @@ class JsonApiBuilder
     public function finalize()
     {
         // 1. Handle Sparse Fieldsets
-        $resourceKey = $this->query->getModel()->getTable();
-        $requestedFields = $this->request->input("fields.{$resourceKey}");
-        
-        if ($requestedFields) {
-            $fields = explode(',', $requestedFields);
-            $validFields = array_intersect($fields, $this->selectedColumns);
+        // Only when fields were declared. Otherwise select([]) would select no columns at all and replace any select
+        // the caller made on the query
+        if (!empty($this->selectedColumns)) {
+            $model = $this->query->getModel();
+            $requestedFields = $this->request->input("fields.{$model->getTable()}");
+            $validFields = $requestedFields
+                ? array_values(array_intersect(explode(',', $requestedFields), $this->selectedColumns))
+                : [];
+
             if (!empty($validFields)) {
-                $this->query->select($validFields);
+                // Models cannot be serialised without their key
+                $this->query->select(array_values(array_unique([$model->getKeyName(), ...$validFields])));
             } else {
                 $this->query->select($this->selectedColumns);
             }
-        } else {
-            $this->query->select($this->selectedColumns);
         }
 
         // 2. Handle Advanced Condition Filters
